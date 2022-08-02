@@ -8,15 +8,16 @@ import './App.css';
 function App() {
   // Declare a new state variable, which we'll call "word"
   const [word, setWord] = useState("");
-  const [wordMeaning, setWordMeaning] = useState<undefined | any>(undefined);
+  const [wordMeaning, setWordMeaning] = useState<null | undefined | any>(undefined);
 
   const DICTIONARY_BASE_URL = "https://api.dictionaryapi.dev/api/v2";
 
-  return (
-    <div>
-      <h1>English Dictionary</h1>
+  return ( 
+    <body>
+    <div className="wrapper">
+      <h1 className="wrapper-header">English Dictionary</h1>
 
-      <div>
+      <div className="search">
         <TextField
           id="search-bar"
           className="text"
@@ -24,7 +25,7 @@ function App() {
           onChange={(prop: any) => {
             setWord(prop.target.value);
           }}
-          label="Enter a the word for meaning..."
+          label="Search for a word..."
           variant="outlined"
           placeholder="Search..."
           size="small"
@@ -39,34 +40,40 @@ function App() {
         </IconButton>
       </div>
 
-      <p>You have entered {word}</p>
-
+      <p className="entered-word">Search the meaning of {word}</p>
+      {wordMeaning === undefined ? (
+        <div></div>
+      ) : (
+        <div>
       {wordMeaning === undefined || wordMeaning === null ? (
-        <p>Word not found</p>
+       <ul><li> <p>Word not found</p></li> </ul>
       ) : (
         <div id="word-meaning">
-        Meaning:{wordMeaning[0].meanings[0].definitions[0].definition}  
+          <ul>
+            <li className="meaning">  
+        Meaning:{wordMeaning[0].meanings[0].definitions[0].definition}
+        </li> 
+        </ul> 
          </div>
-         
+        )}
+     </div>
       )}
     </div>
+    </body>
   );
 
   function search() {
+    console.log(word);
+    if(word === undefined || word === "") {
+      return;
+    }
     axios.get(DICTIONARY_BASE_URL + "/entries/en/" + word).then((res) => {
     setWordMeaning(res.data);
     })
-    .catch((err) => {
-      console.log("Word meaning not found");
-      setWordMeaning(undefined);
+    .catch(() => {
+      setWordMeaning(null)
     });
-    axios.get(DICTIONARY_BASE_URL + "/entries/en/" + word).then((res) => {
-      console.log(res.data);
-      })
-      .catch((err) => {
-        console.log("Word meaning not found");
-        setWordMeaning(undefined);
-      });
+    
   }
 }
 
